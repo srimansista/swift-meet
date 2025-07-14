@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Menu, X, Heart, User, LogIn } from 'lucide-react'
+import { Menu, X, Heart, User, LogIn, Plus } from 'lucide-react'
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -45,6 +45,14 @@ const Navbar = () => {
 
           {/* Auth Buttons */}
           <div className="hidden md:flex items-center space-x-4">
+            <Link
+              to="/events/create"
+              className="btn-primary flex items-center space-x-1"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Create Event</span>
+            </Link>
+            
             {isAuthenticated ? (
               <div className="flex items-center space-x-2">
                 <User className="h-5 w-5 text-gray-600" />
@@ -100,6 +108,15 @@ const Navbar = () => {
                 {item.name}
               </Link>
             ))}
+            
+            <Link
+              to="/events/create"
+              className="block px-3 py-2 rounded-md text-base font-medium text-blue-600 hover:bg-blue-50"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Create Event
+            </Link>
+            
             {!isAuthenticated && (
               <div className="pt-4 space-y-2">
                 <Link

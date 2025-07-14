@@ -1,11 +1,12 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Filter, MapPin, Calendar, Users, Heart } from 'lucide-react'
+import { Search, Filter, MapPin, Calendar, Users, Heart, Plus } from 'lucide-react'
 
 const Events = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [selectedLocation, setSelectedLocation] = useState('all')
+  const [events, setEvents] = useState([])
 
   const categories = [
     'all', 'Environment', 'Education', 'Hunger Relief', 'Healthcare', 
@@ -16,86 +17,11 @@ const Events = () => {
     'all', 'Downtown', 'North Side', 'South Side', 'East Side', 'West Side'
   ]
 
-  const events = [
-    {
-      id: 1,
-      title: 'Community Garden Cleanup',
-      organization: 'Green Earth Initiative',
-      location: 'Central Park, Downtown',
-      date: '2025-01-20',
-      time: '9:00 AM - 12:00 PM',
-      volunteers: 15,
-      maxVolunteers: 25,
-      category: 'Environment',
-      description: 'Help maintain our community garden and learn about sustainable gardening practices.',
-      image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=250&fit=crop'
-    },
-    {
-      id: 2,
-      title: 'Food Bank Distribution',
-      organization: 'Local Food Bank',
-      location: 'Community Center, North Side',
-      date: '2025-01-22',
-      time: '2:00 PM - 5:00 PM',
-      volunteers: 8,
-      maxVolunteers: 20,
-      category: 'Hunger Relief',
-      description: 'Assist with sorting and distributing food to families in need.',
-      image: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&h=250&fit=crop'
-    },
-    {
-      id: 3,
-      title: 'Senior Center Tech Help',
-      organization: 'Digital Literacy Program',
-      location: 'Golden Years Center, East Side',
-      date: '2025-01-25',
-      time: '10:00 AM - 2:00 PM',
-      volunteers: 5,
-      maxVolunteers: 10,
-      category: 'Education',
-      description: 'Help seniors learn to use smartphones, tablets, and computers.',
-      image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&h=250&fit=crop'
-    },
-    {
-      id: 4,
-      title: 'Animal Shelter Care',
-      organization: 'Paws & Hearts Shelter',
-      location: 'Animal Shelter, West Side',
-      date: '2025-01-23',
-      time: '1:00 PM - 4:00 PM',
-      volunteers: 12,
-      maxVolunteers: 15,
-      category: 'Animal Welfare',
-      description: 'Help care for animals, clean facilities, and assist with adoptions.',
-      image: 'https://images.unsplash.com/photo-1450778869180-41d0601e046e?w=400&h=250&fit=crop'
-    },
-    {
-      id: 5,
-      title: 'Hospital Volunteer Program',
-      organization: 'City General Hospital',
-      location: 'City General Hospital, South Side',
-      date: '2025-01-24',
-      time: '8:00 AM - 12:00 PM',
-      volunteers: 3,
-      maxVolunteers: 8,
-      category: 'Healthcare',
-      description: 'Assist with patient support, administrative tasks, and visitor guidance.',
-      image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=250&fit=crop'
-    },
-    {
-      id: 6,
-      title: 'Community Art Workshop',
-      organization: 'Creative Community Center',
-      location: 'Art Center, Downtown',
-      date: '2025-01-26',
-      time: '3:00 PM - 6:00 PM',
-      volunteers: 7,
-      maxVolunteers: 12,
-      category: 'Arts & Culture',
-      description: 'Help facilitate art workshops for children and families.',
-      image: 'https://images.unsplash.com/photo-1499892477393-f675706cbe6e?w=400&h=250&fit=crop'
-    }
-  ]
+  // Load events from localStorage on component mount
+  useEffect(() => {
+    const savedEvents = JSON.parse(localStorage.getItem('swiftMeetEvents') || '[]')
+    setEvents(savedEvents)
+  }, [])
 
   const filteredEvents = events.filter(event => {
     const matchesSearch = event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -109,9 +35,18 @@ const Events = () => {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div>
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">Volunteering Events</h1>
-        <p className="text-gray-600">Find opportunities to make a difference in your community</p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">Volunteering Events</h1>
+          <p className="text-gray-600">Find opportunities to make a difference in your community</p>
+        </div>
+        <Link 
+          to="/events/create"
+          className="btn-primary flex items-center space-x-2 self-start"
+        >
+          <Plus className="h-4 w-4" />
+          <span>Create Event</span>
+        </Link>
       </div>
 
       {/* Search and Filters */}
@@ -211,7 +146,7 @@ const Events = () => {
                 </div>
                 <div className="flex items-center space-x-2">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(event.date).toLocaleDateString()} • {event.time}</span>
+                  <span>{new Date(event.date).toLocaleDateString()} • {event.startTime} - {event.endTime}</span>
                 </div>
               </div>
               
@@ -238,7 +173,10 @@ const Events = () => {
             <Search className="h-16 w-16 mx-auto" />
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No events found</h3>
-          <p className="text-gray-600">Try adjusting your search criteria or filters</p>
+          <p className="text-gray-600 mb-6">Try adjusting your search criteria or create the first event!</p>
+          <Link to="/events/create" className="btn-primary">
+            Create First Event
+          </Link>
         </div>
       )}
     </div>
